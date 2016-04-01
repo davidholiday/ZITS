@@ -59,7 +59,7 @@ Lastly, now that Zookeeper already has a token field set up at a given path, any
     long numTokensL = 1000000000;
     ZITS zkClusterClient = new ZITS(zkConnectS, zkNodeBasePathS, numTokensL);
 
-creates a client that assumes the zookeeper instance at `localhost:2181, `the path` /OTM/AtomicLong/cluster` has an initialized token field of `1000000000` tokens. 
+creates a client that assumes the zookeeper instance at `localhost:2181` , the path `/flarp/schmoo/stuff/foo` has an initialized token field of `1000000000` tokens. 
 
 
 troubleshooting
@@ -76,4 +76,4 @@ troubleshooting
 
 one last thing
 --------------
-This libary also contains an implenetation of Curator's Distributed Atomic Long recipe. It too has the capability of reporting metrics to a Graphite server. To use, create an instance of class ZookeeperDistributedAtomicLongClient.
+This libary also contains an implenetation of Curator's Distributed Atomic Long recipe. It too has the capability of reporting metrics to a Graphite server. To use, create an instance of class `ZookeeperDistributedAtomicLongClient`.
