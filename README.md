@@ -21,14 +21,12 @@ Use maven to build:
 
 ZITS also includes a built-in pressure tester that allows you to simulate a number of ZITS clients making simultaneous requests for [n] number of available tokens simultaneously. To set that up, update the following variables at the top of the `main()` method in class `PressureTesterBootstrap`.
 
-    	int threadCountI = *how many ZITS clients you want*;
-     	int runCountI = *how many get requests each ZIT client should make*; 
+    	int threadCountI = *how many ZITS clients you want*
+     	int runCountI = *how many get requests each ZIT client should make* 
      	int requestNumPerGetI = *how many tokens each client should request per get*;
-     	int numBlocksI = *number of blocks of 512KB tokens zookeeper 
-	     	should be initialized with*
-    	String zkConnectS = *ip address and port number of zookeeper ensemble*;
-    	String zkNodeBasePathS = *base path at which the tokens should be stored. 
-	    	eg /flarp/schmoo/stuff/foo;
+     	int numBlocksI = *number of blocks of 512KB tokens zookeeper should be initialized with*
+    	String zkConnectS = *ip address and port number of zookeeper ensemble*
+    	String zkNodeBasePathS = *base path at which the tokens should be stored. eg /flarp/schmoo/stuff/foo*
  
 
 
