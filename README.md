@@ -15,7 +15,7 @@ Use maven to build:
 
     mvn clean install
 
-*NOTE* built in tests are disabled by default because I didn't want to assume you'd have zookeeper running when you build this. In order to run the built in tests, build this way instead:
+*NOTE* built-in tests are disabled by default because I didn't want to assume you'd have zookeeper running when you build this. In order to run the built in tests, build this way instead:
 
     mvn clean install -DskipTests=false
 
