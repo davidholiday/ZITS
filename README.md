@@ -76,6 +76,6 @@ troubleshooting
 		    this.zkClusterClient.releaseLock(lockAndBlockID_I);
 
 
-One Last Thing
+one last thing
 --------------
 This libary also contains an implenetation of Curator's Distributed Atomic Long recipe. It too has the capability of reporting metrics to a Graphite server. To use, create an instance of class ZookeeperDistributedAtomicLongClient.
