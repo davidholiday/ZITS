@@ -43,7 +43,7 @@ Depending on your needs, create a ZITS client using the appropriate constructor.
     String zkNodeBasePathS = "/OTM/AtomicLong/cluster";
     ZITS zkClusterClient = new ZITS(zkConnectS, zkNodeBasePathS);	
 
-Then you would initialize  Zookeeper with a billion available tokens like this: 
+Then you could initialize  Zookeeper with a billion available tokens like this: 
      
     long totalAvailableTokensL = 1000000000;
     zkClusterClient.initializeDataBlocks(totalAvailableTokensL);  
