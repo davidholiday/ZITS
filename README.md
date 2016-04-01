@@ -52,7 +52,7 @@ From there, you could retrieve one thousand free tokens (setting them to taken u
 
     List<Long> returnedTokensList = zkClusterClient.getAvailableTokens(true, 1000);
 
-Lastly, now that Zookeeper already has a token field set up at a given path, any new ZITS clients you create need to be created using a different constructor. For example:
+Lastly, now that Zookeeper already has a token field set up at a given path, any new ZITS clients you create needs to be created using a different constructor. For example:
 
     String zkConnectS = "localhost:2181";
     String zkNodeBasePathS = "/flarp/schmoo/stuff/foo";
