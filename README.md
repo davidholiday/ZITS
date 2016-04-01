@@ -57,7 +57,7 @@ Lastly, now that Zookeeper already has a token field set up at a given path, any
     String zkConnectS = "localhost:2181";
     String zkNodeBasePathS = "/OTM/AtomicLong/cluster";
     long numTokensL = 1000000000;
-    public ZITS(String zkConnectString,  String zkNodeBasePath, long numTokensL) {
+    ZITS zkClusterClient = new ZITS(zkConnectS, zkNodeBasePathS, numTokensL);
 
 creates a client that assumes the zookeeper instance at `localhost:2181, `the path` /OTM/AtomicLong/cluster` has an initialized token field of `1000000000` tokens. 
 
