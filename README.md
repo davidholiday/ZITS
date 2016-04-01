@@ -40,7 +40,7 @@ Once you've built the library simply include it as a dependency in your Java pro
 Depending on your needs, create a ZITS client using the appropriate constructor. For example, if you need to set up a token field in Zookeeper and you don't need metrics reporting, you would first create a ZITS client:
 
     String zkConnectS = "localhost:2181";
-    String zkNodeBasePathS = "/OTM/AtomicLong/cluster";
+    String zkNodeBasePathS = "/flarp/schmoo/stuff/foo";
     ZITS zkClusterClient = new ZITS(zkConnectS, zkNodeBasePathS);	
 
 Then you could initialize  Zookeeper with a billion available tokens like this: 
@@ -55,7 +55,7 @@ From there, you could retrieve one thousand free tokens (setting them to taken u
 Lastly, now that Zookeeper already has a token field set up at a given path, any new ZITS clients you create need to be created using a different constructor. For example:
 
     String zkConnectS = "localhost:2181";
-    String zkNodeBasePathS = "/OTM/AtomicLong/cluster";
+    String zkNodeBasePathS = "/flarp/schmoo/stuff/foo";
     long numTokensL = 1000000000;
     ZITS zkClusterClient = new ZITS(zkConnectS, zkNodeBasePathS, numTokensL);
 
