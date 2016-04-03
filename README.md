@@ -19,7 +19,7 @@ Use maven to build:
 
     mvn clean install -DskipTests=false
 
-ZITS also includes a built-in pressure tester that allows you to simulate a number of ZITS clients making simultaneous requests for [n] number of available tokens simultaneously. To set that up, update the following variables at the top of the `main()` method in class `PressureTesterBootstrap`.
+ZITS also includes a built-in pressure tester that allows you to simulate a number of ZITS clients making simultaneous requests for [n] number of available tokens. To set that up, update the following variables at the top of the `main()` method in class `PressureTesterBootstrap`.
 
     	int threadCountI = *how many ZITS clients you want*
      	int runCountI = *how many get requests each ZIT client should make* 
