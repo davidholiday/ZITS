@@ -244,6 +244,50 @@ public class ZITS {
 	
 	
 	/**
+	 * static method to allow clients to check a given zookeeper ensemble 
+	 * for existing token clusters. 
+	 * 
+	 * @param zkConnectString
+	 * @param zkNodeBasePath
+	 * 
+	 * @return map containing the metadata entry for a given cluster location. 
+	 * if there's nothing at that location, an error is logged and the returned
+	 * map is empty. 
+	 */
+	public static Map<String, String> getMetaData(String zkConnectString, 
+		    									  String zkNodeBasePath) {
+		
+		Map<String, String> metaDataMap = new HashMap<String, String>();
+		CuratorFramework localFramework = null;
+		
+		try {
+			localFramework = CuratorFrameworkFactory.newClient(
+						zkConnectString, new RetryUntilElapsed(3000, 1000));
+
+			localFramework.start();	
+			localFramework.blockUntilConnected(3, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			LOGGER.error("FAILURE CONNECTING TO ZOOKEEPER!", e);
+			return metaDataMap;
+		}
+		
+		for (MetadataKeys keyE : MetadataKeys.values()) {
+			String keyS = keyE.toString();
+			String pathS = zkNodeBasePath + "/meta/" + keyS;
+					
+			try {
+				byte[] dataARR = localFramework.getData().forPath(pathS);
+				String valueS = new String(dataARR);
+				metaDataMap.put(keyS, valueS);
+			} catch (Exception e) {
+				LOGGER.error("FAILURE GETTING METADATA FROM PATH: " + pathS, e);
+			}
+		}
+		
+		return metaDataMap;
+	}
+	
+	/**
 	 * sets/disables metrics reporting *NOTE* if this object wasn't constructed
 	 * with the necessary objects for metrics reporting, this method will always
 	 * set boolean reportMetrics to false.
