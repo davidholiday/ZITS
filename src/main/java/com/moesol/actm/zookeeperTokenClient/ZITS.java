@@ -1,7 +1,9 @@
 package com.moesol.actm.zookeeperTokenClient;
 
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -301,6 +303,12 @@ public class ZITS {
 		if (!successB) { return successB; }
 		
 		successB = setAllTokensThisAndAbove(totalAvailableTokensL);
+			
+		Map<String, String> metaDataValueMap = 
+				createBasicMetaDataMap(numBlocksI, totalAvailableTokensL);
+		
+		successB = setMetaData(metaDataValueMap);
+		
 		return successB;
 	}
 	
@@ -331,6 +339,12 @@ public class ZITS {
 		if (!successB) { return successB; }
 		
 		successB = setAllTokensThisAndAbove(totalAvailableTokensL);
+		
+		Map<String, String> metaDataValueMap = 
+				createBasicMetaDataMap(numBlocksI, totalAvailableTokensL);
+		
+		successB = setMetaData(metaDataValueMap);
+		
 		return successB;
 	}
 	
@@ -343,7 +357,14 @@ public class ZITS {
 	 * @return boolean indicating success or failure of operation.
 	 */
 	public boolean initializeBlocks(int numBlocksI) {
-		boolean successB = createBlocks(numBlocksI);			
+		boolean successB = createBlocks(numBlocksI);	
+		long totalAvailableTokensL = getTokenCountForBlockNum(numBlocksI);
+		
+		Map<String, String> metaDataValueMap = 
+				createBasicMetaDataMap(numBlocksI, totalAvailableTokensL);
+		
+		successB = setMetaData(metaDataValueMap);
+		
 		return successB;
 	}
 	
@@ -414,8 +435,47 @@ public class ZITS {
 	 * 
 	 * @return boolean flag indicating success or failure of operation
 	 */
-	public boolean deleteBlocks() {
+	public boolean deleteBlocks(boolean deleteBasePath) {
 		boolean successB  = false;
+		
+		if (this.numBlocksI == 0) {
+			LOGGER.info("Nothing to delete - returning to caller...");
+			successB = true;
+			return successB;
+		}
+		
+		List<String> nodesToDeleteL = 
+				IntStream.range(0, numBlocksI)
+		         .parallel()
+		         .mapToObj(i -> new String(zkNodeBasePathS + "/" + i))
+		         .collect(Collectors.toList());
+		
+		String pathToDeleteS = zkNodeBasePathS + "/meta";
+		nodesToDeleteL.add(pathToDeleteS);
+		
+		if (deleteBasePath) { 
+			String[] spliterfiedBasePathARR = zkNodeBasePathS.split("/");
+			String rootPathS = "/" + spliterfiedBasePathARR[1];		
+			nodesToDeleteL.add(rootPathS);
+		}	
+		
+		successB = deleteHelper(nodesToDeleteL);
+		
+		this.lockList.clear();
+		this.numBlocksI = 0;
+		return successB;	
+	}
+			
+	
+	/**
+	 * private helper method containing the actual delete logic. exists to
+	 * keep the code DRY.
+	 * 
+	 * @param pathToDelete
+	 * @return boolean indicating success or failure
+	 */
+	private boolean deleteHelper(List<String> nodesToDeleteL) {
+		boolean successB = false;
 		
 		try {
 			this.curatorFramework.blockUntilConnected(3, TimeUnit.MINUTES);
@@ -424,38 +484,31 @@ public class ZITS {
 			return successB;
 		}
 		
-		
-		for (int i = 0; i < this.numBlocksI; i ++) {
-			String fullZkPathS = zkNodeBasePathS + "/" + i;
+		for (String nodeToDeleteS : nodesToDeleteL) {
 			
-			try {	
-				
+			try {		
 				this.curatorFramework
 					.delete()
 					.deletingChildrenIfNeeded()
-					.forPath(fullZkPathS);
-
+					.forPath(nodeToDeleteS);
+	
 			} catch (Exception e) {
 				LOGGER.error("FAILURE DELETING DATA BLOCKS!", e);
 				return successB;
-			}	
+			}
 			
 		}
-	
-		successB = true;
-		this.lockList.clear();
-		this.numBlocksI = 0;
-		
-		return successB;	
-	}
 			
+		successB = true;
+		return successB;
+	}
 	
 
 	/**
 	 * gets a set of available tokens. if only able to find some but not all 
 	 * the requested quantity, what was found is returned to the caller. this 
 	 * means it's up to the caller to check the return list to ensure the 
-	 * corret number of tokens was returned! 
+	 * correct number of tokens was returned! 
 	 * 
 	 * @param setTokenUponRetrivalB
 	 * @param numTokensI
@@ -859,7 +912,7 @@ public class ZITS {
 	 * of addressable tokens. 
 	 * 
 	 * @param tokenID_L
-	 * @return
+	 * @return boolean indicating success or failure.
 	 */
 	private boolean setAllTokensThisAndAbove(long tokenID_L) {
 		
@@ -882,6 +935,77 @@ public class ZITS {
 	}
 	
 	
+	/**
+	 * helper method that creates a map of meta data values for the number 
+	 * of blocks in the chain, the total number of available tokens, 
+	 * and the time/date when the block chain was created. 
+	 * 
+	 * @param blockCount
+	 * @param tokenCount
+	 * @return map containing the metadata k,v pairs
+	 */
+	private Map<String, String> createBasicMetaDataMap(int blockCount, 
+			                                           long tokenCount) {
+		
+		Map<String, String> metaDataValueMap = new HashMap<String, String>();
+
+		String keyNameS = MetadataKeys.BLOCK_COUNT.toString();
+		String valueS = Integer.toString(blockCount);	
+		metaDataValueMap.put(keyNameS, valueS);
+		
+		keyNameS = MetadataKeys.TOKEN_COUNT.toString();
+		valueS = Long.toString(tokenCount);
+		metaDataValueMap.put(keyNameS, valueS);
+		
+		keyNameS = MetadataKeys.DATE_CREATED.toString();
+	    Calendar currentDate = Calendar.getInstance();
+	    SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-YYYY-hh:mm:ss");
+	    valueS = formatter.format(currentDate.getTime());
+		metaDataValueMap.put(keyNameS, valueS);
+		
+		return metaDataValueMap;
+	}
+	
+	
+	/**
+	 * helper method used when initializing blocks. sets <k,v> pairs as 
+	 * subpaths of zkNodeBasePath/meta/. so the full path of a given <k,v>
+	 * would be [zkNodeBasePath]/meta/[k]
+	 * 
+	 * @param metaDataValueMap
+	 * @return boolean indicating success or failure.
+	 */
+	private boolean setMetaData(Map<String, String> metaDataValueMap) {
+		boolean successB = false;
+		
+		try {
+			this.curatorFramework.blockUntilConnected(3, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			LOGGER.error("FAILURE CONNECTING TO ZOOKEEPER!", e);
+			return successB;
+		}
+				
+		for (String keyS: metaDataValueMap.keySet()) {
+			String valueS = metaDataValueMap.get(keyS);
+			byte[] valueARR = valueS.getBytes();
+			String fullZkPathS = zkNodeBasePathS + "/meta/" + keyS;
+
+			try {			
+				this.curatorFramework.create()
+									 .creatingParentContainersIfNeeded()
+									 .forPath(fullZkPathS);
+				
+				this.curatorFramework.setData().forPath(fullZkPathS, valueARR);			
+			} catch (Exception e) {
+				LOGGER.error("FAILURE CREATING NODES!", e);
+				return successB;
+			}			
+			
+		}
+		
+		successB = true;
+		return successB;
+	}
 	
 	
 

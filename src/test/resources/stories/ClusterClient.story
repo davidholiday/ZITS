@@ -34,15 +34,15 @@ Then the 10 blocks are not empty
 
 Scenario: Test block read data integrity
 Given a zk atomic long cluster client
-When the caller initializes 275 blocks
-And the caller serializes 275 blocks of random data
-Then the 275 blocks are identical to the serialized blocks
+When the caller initializes 5 blocks
+And the caller serializes 5 blocks of random data
+Then the 5 blocks are identical to the serialized blocks
 
 
 Scenario: Test delete blocks
 Given a zk atomic long cluster client
-When the caller initializes 275 blocks
-And the caller serializes 275 blocks of random data
+When the caller initializes 5 blocks
+And the caller serializes 5 blocks of random data
 And the caller deletes the blocks
 Then there are no remaining blocks in zookeeper
 
@@ -55,14 +55,14 @@ Then both sets of tokenIDs should match
 
 Scenario: Test get available token
 Given a zk atomic long cluster client
-And 275 serialized blocks of random data
+And 5 serialized blocks of random data
 When the caller gets 1000 tokens
 Then all the returned tokens are independently retrieved as valid
 
 
 Scenario: Test set token
 Given a zk atomic long cluster client
-And 275 serialized blocks of random data
+And 5 serialized blocks of random data
 When the caller gets 1000 tokens
 And the caller sets those tokens
 Then the tokens are verified as set
@@ -70,7 +70,7 @@ Then the tokens are verified as set
 
 Scenario: Test unset token
 Given a zk atomic long cluster client
-And 275 serialized blocks of random data
+And 5 serialized blocks of random data
 When the caller gets 1000 tokens that are already set
 And the caller unsets those tokens
 Then the tokens are verified as unset
@@ -79,7 +79,7 @@ Then the tokens are verified as unset
 
 Scenario: Test block/token count conversion
 Given a zk atomic long cluster client
-When the caller converts 275 blocks to token count and back
+When the caller converts 5 blocks to token count and back
 Then both block counts should be the same size
 
 

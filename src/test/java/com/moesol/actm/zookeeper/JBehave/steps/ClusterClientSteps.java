@@ -46,7 +46,7 @@ public class ClusterClientSteps extends Steps {
 	private List<byte[]> serializedBlockList = new ArrayList<byte[]>();
 	private List<Long> generatedTokenList = new ArrayList<Long>();
 	private List<Long> returnedTokenList = new ArrayList<Long>();
-	private String zkConnectS = "localhost:32810";
+	private String zkConnectS = "localhost:32770";
 	private String zkNodeBasePathS = "/OTM/AtomicLong/cluster";
 
 	
@@ -60,7 +60,7 @@ public class ClusterClientSteps extends Steps {
 		this.serializedBlockList.clear();
 		this.generatedTokenList.clear();
 		this.returnedTokenList.clear();
-		boolean successB = this.zkClusterClient.deleteBlocks();
+		boolean successB = this.zkClusterClient.deleteBlocks(true);
 		
 		if (!successB) {
 			LOGGER.error("failure detected in deleting blocks!");
@@ -252,7 +252,7 @@ public class ClusterClientSteps extends Steps {
 	
 	@When("the caller deletes the blocks")
 	public void deleteBlocks() {
-		this.deleteSuccessB = this.zkClusterClient.deleteBlocks();
+		this.deleteSuccessB = this.zkClusterClient.deleteBlocks(true);
 	}
 	
 	

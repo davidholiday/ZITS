@@ -104,7 +104,7 @@ public class PressureTesterBootstrap {
     											 * requestNumPerGetI));	
     	} finally {
     		executorPool.shutdown();
-    		successB = zkClusterClient.deleteBlocks();
+    		successB = zkClusterClient.deleteBlocks(true);
     		
     		if (!successB) {
     			LOGGER.error("failure detected in deleting blocks!");
